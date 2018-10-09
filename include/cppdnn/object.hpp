@@ -9,6 +9,9 @@
 namespace cppdnn
 {
 	template<typename Ty_>
+	class basic_value;
+
+	template<typename Ty_>
 	class basic_object
 	{
 	public:
@@ -28,7 +31,9 @@ namespace cppdnn
 	public:
 		virtual bool is_value() const noexcept;
 
+		virtual std::shared_ptr<basic_object<Ty_>> copy() const = 0;
 		virtual void for_each(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const = 0;
+		virtual void apply(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>& func) = 0;
 	};
 
 	using object = basic_object<double>;
@@ -60,14 +65,57 @@ namespace cppdnn
 
 	public:
 		virtual bool is_value() const noexcept override;
-
+		
+		virtual std::shared_ptr<basic_object<Ty_>> copy() const override;
 		virtual void for_each(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const override;
+		virtual void apply(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>& func) override;
+
+	public:
+		const Ty_& data() const noexcept;
+		Ty_& data() noexcept;
 
 	private:
 		Ty_ data_;
 	};
 
 	using value = basic_value<double>;
+
+	template<typename Ty_>
+	class basic_value_ref : public basic_object<Ty_>
+	{
+	public:
+		basic_value_ref() noexcept = default;
+		basic_value_ref(Ty_& value) noexcept;
+		basic_value_ref(const basic_value_ref& value) noexcept;
+		virtual ~basic_value_ref() override = default;
+
+	public:
+		basic_value_ref& operator=(const basic_value_ref& value) noexcept;
+		bool operator==(const basic_value_ref& value) const noexcept;
+		bool operator!=(const basic_value_ref& value) const noexcept;
+
+		virtual basic_object<Ty_>& operator=(const basic_object<Ty_>& object) override;
+		virtual basic_object<Ty_>& operator=(basic_object<Ty_>&& object) override;
+		virtual bool operator==(const basic_object<Ty_>& object) const override;
+		virtual bool operator!=(const basic_object<Ty_>& object) const override;
+
+	public:
+		virtual bool is_value() const noexcept override;
+		
+		virtual std::shared_ptr<basic_object<Ty_>> copy() const override;
+		virtual void for_each(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const override;
+		virtual void apply(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>& func) override;
+
+	public:
+		const Ty_& data() const noexcept;
+		Ty_& data() noexcept;
+
+	private:
+		Ty_* data_ = nullptr;
+	};
+
+	template<typename Ty_>
+	std::shared_ptr<basic_value_ref<Ty_>> to_value_ref(const basic_object_ptr<Ty_>& object);
 }
 
 #include "details/object.hpp"

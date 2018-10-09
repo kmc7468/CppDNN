@@ -2,7 +2,7 @@
 #define CPPDNN_HEADER_DETAILS_VECTOR_HPP
 
 #include <cppdnn/exception.hpp>
-#include <cppdnn/details/utility.hpp>
+#include <cppdnn/utility.hpp>
 
 #include <algorithm>
 #include <type_traits>
@@ -76,7 +76,7 @@ namespace cppdnn
 	template<typename Ty_>
 	basic_object<Ty_>& basic_vector<Ty_>::operator=(const basic_object<Ty_>& object)
 	{
-		if (!details::instance_of<basic_vector<Ty_>>(&object))
+		if (!instance_of<basic_vector<Ty_>>(&object))
 			throw invalid_type("Argument 'object' can't be converted to cppdnn::basic_vector.");
 
 		return operator=(dynamic_cast<const basic_vector&>(object));
@@ -84,7 +84,7 @@ namespace cppdnn
 	template<typename Ty_>
 	basic_object<Ty_>& basic_vector<Ty_>::operator=(basic_object<Ty_>&& object)
 	{
-		if (!details::instance_of<basic_vector<Ty_>>(&object))
+		if (!instance_of<basic_vector<Ty_>>(&object))
 			throw invalid_type("Argument 'object' can't be converted to cppdnn::basic_vector.");
 
 		return operator=(dynamic_cast<basic_vector&&>(object));
@@ -92,7 +92,7 @@ namespace cppdnn
 	template<typename Ty_>
 	bool basic_vector<Ty_>::operator==(const basic_object<Ty_>& object) const
 	{
-		if (!details::instance_of<basic_vector<Ty_>>(&object))
+		if (!instance_of<basic_vector<Ty_>>(&object))
 			throw invalid_type("Argument 'object' can't be converted to cppdnn::basic_vector.");
 
 		return operator==(dynamic_cast<const basic_vector&>(object));
@@ -100,18 +100,37 @@ namespace cppdnn
 	template<typename Ty_>
 	bool basic_vector<Ty_>::operator!=(const basic_object<Ty_>& object) const
 	{
-		if (!details::instance_of<basic_vector<Ty_>>(&object))
+		if (!instance_of<basic_vector<Ty_>>(&object))
 			throw invalid_type("Argument 'object' can't be converted to cppdnn::basic_vector.");
 
 		return operator!=(dynamic_cast<const basic_vector&>(object));
 	}
 
 	template<typename Ty_>
+	std::shared_ptr<basic_object<Ty_>> basic_vector<Ty_>::copy() const
+	{
+		return std::make_shared<basic_vector<Ty_>>(data_);
+	}
+	template<typename Ty_>
 	void basic_vector<Ty_>::for_each(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const
 	{
+		std::shared_ptr<basic_value_ref<Ty_>> data = std::make_shared<basic_value_ref<Ty_>>();
+
 		for (const Ty_& value : data_)
 		{
-			func(std::make_shared<basic_value<Ty_>>(value));
+			*data = const_cast<Ty_&>(value);
+			func(data);
+		}
+	}
+	template<typename Ty_>
+	void basic_vector<Ty_>::apply(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>& func)
+	{
+		std::shared_ptr<basic_value_ref<Ty_>> data = std::make_shared<basic_value_ref<Ty_>>();
+
+		for (Ty_& value : data_)
+		{
+			*data = value;
+			func(data);
 		}
 	}
 

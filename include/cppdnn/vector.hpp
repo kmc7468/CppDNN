@@ -41,7 +41,9 @@ namespace cppdnn
 		virtual bool operator!=(const basic_object<Ty_>& object) const override;
 
 	public:
+		virtual std::shared_ptr<basic_object<Ty_>> copy() const override;
 		virtual void for_each(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const override;
+		virtual void basic_vector<Ty_>::apply(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>&) override;
 
 	public:
 		const Ty_& at(std::size_t index) const noexcept;

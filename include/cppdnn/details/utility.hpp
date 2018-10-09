@@ -5,13 +5,10 @@
 
 namespace cppdnn
 {
-	namespace details
+	template<typename Ty1_, typename Ty2_>
+	bool instance_of(Ty2_* value) noexcept
 	{
-		template<typename Ty1_, typename Ty2_>
-		bool instance_of(Ty2_* value) noexcept
-		{
-			return dynamic_cast<Ty1_*>(const_cast<typename std::remove_cv<Ty2_>::type*>(value)) != nullptr;
-		}
+		return dynamic_cast<Ty1_*>(const_cast<typename std::remove_cv<Ty2_>::type*>(value)) != nullptr;
 	}
 }
 
