@@ -1,0 +1,71 @@
+#ifndef CPPDNN_HEADER_VECTOR_HPP
+#define CPPDNN_HEADER_VECTOR_HPP
+
+#include <cppdnn/object.hpp>
+
+#include <initializer_list>
+#include <vector>
+
+namespace cppdnn
+{
+	template<typename Ty_>
+	class basic_vector : public basic_object<Ty_>
+	{
+	public:
+		using iterator = typename std::vector<Ty_>::iterator;
+		using const_iterator = typename std::vector<Ty_>::const_iterator;
+		using reverse_iterator = typename std::vector<Ty_>::reverse_iterator;
+		using const_reverse_iterator = typename std::vector<Ty_>::const_reverse_iterator;
+
+	public:
+		basic_vector() = default;
+		basic_vector(std::size_t size);
+		basic_vector(const std::vector<Ty_>& vector);
+		basic_vector(std::vector<Ty_>&& vector) noexcept;
+		basic_vector(const basic_vector& vector);
+		basic_vector(basic_vector&& vector) noexcept;
+		basic_vector(std::initializer_list<Ty_> list);
+		virtual ~basic_vector() override = default;
+		
+	public:
+		basic_vector& operator=(const basic_vector& vector);
+		basic_vector& operator=(basic_vector&& vector) noexcept;
+		bool operator==(const basic_vector& vector) const;
+		bool operator!=(const basic_vector& vector) const;
+		const Ty_& operator[](std::size_t index) const noexcept;
+		Ty_& operator[](std::size_t index) noexcept;
+
+		virtual basic_object<Ty_>& operator=(const basic_object<Ty_>& object) override;
+		virtual basic_object<Ty_>& operator=(basic_object<Ty_>&& object) override;
+		virtual bool operator==(const basic_object<Ty_>& object) const override;
+		virtual bool operator!=(const basic_object<Ty_>& object) const override;
+
+	public:
+		const Ty_& at(std::size_t index) const noexcept;
+		Ty_& at(std::size_t index) noexcept;
+		iterator begin() noexcept;
+		const_iterator begin() const noexcept;
+		const_iterator cbegin() const noexcept;
+		iterator end() noexcept;
+		const_iterator end() const noexcept;
+		const_iterator cend() const noexcept;
+		reverse_iterator rbegin() noexcept;
+		const_reverse_iterator rbegin() const noexcept;
+		const_reverse_iterator crbegin() const noexcept;
+		reverse_iterator rend() noexcept;
+		const_reverse_iterator rend() const noexcept;
+		const_reverse_iterator crend() const noexcept;
+
+		bool empty() const noexcept;
+		std::size_t size() const noexcept;
+
+	private:
+		std::vector<Ty_> data_;
+	};
+
+	using vector = basic_vector<double>;
+	using vector_ptr = std::shared_ptr<vector>;
+}
+
+#include "details/vector.hpp"
+#endif
