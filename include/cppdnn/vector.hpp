@@ -41,6 +41,9 @@ namespace cppdnn
 		virtual bool operator!=(const basic_object<Ty_>& object) const override;
 
 	public:
+		virtual void for_each(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const override;
+
+	public:
 		const Ty_& at(std::size_t index) const noexcept;
 		Ty_& at(std::size_t index) noexcept;
 		iterator begin() noexcept;
@@ -64,7 +67,6 @@ namespace cppdnn
 	};
 
 	using vector = basic_vector<double>;
-	using vector_ptr = std::shared_ptr<vector>;
 }
 
 #include "details/vector.hpp"

@@ -9,10 +9,14 @@ namespace cppdnn
 	class invalid_type : public std::runtime_error
 	{
 	public:
-		explicit invalid_type(const std::string& message);
-		explicit invalid_type(const char* message);
+		using std::runtime_error::runtime_error;
+	};
+	
+	class not_impl : public std::runtime_error
+	{
+	public:
+		using std::runtime_error::runtime_error;
 	};
 }
 
-#include "details/exception.hpp"
 #endif

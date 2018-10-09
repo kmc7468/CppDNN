@@ -107,6 +107,15 @@ namespace cppdnn
 	}
 
 	template<typename Ty_>
+	void basic_vector<Ty_>::for_each(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const
+	{
+		for (const Ty_& value : data_)
+		{
+			func(std::make_shared<basic_value<Ty_>>(value));
+		}
+	}
+
+	template<typename Ty_>
 	const Ty_& basic_vector<Ty_>::at(std::size_t index) const noexcept
 	{
 		return data_.at(index);
