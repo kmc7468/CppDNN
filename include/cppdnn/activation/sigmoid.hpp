@@ -25,6 +25,9 @@ namespace cppdnn
 	};
 
 	using sigmoid = basic_sigmoid<double>;
+
+	template<typename Ty_ = double>
+	basic_layer_ptr<Ty_> sig();
 }
 
 #include "details/sigmoid.hpp"

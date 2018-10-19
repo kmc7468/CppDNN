@@ -38,6 +38,9 @@ namespace cppdnn
 	};
 
 	using fully_connected_layer = basic_fully_connected_layer<double>;
+
+	template<typename Ty_ = double>
+	basic_layer_ptr<Ty_> fc(std::size_t unit, std::size_t input);
 }
 
 #include "details/fully_connected_layer.hpp"

@@ -10,6 +10,12 @@ namespace cppdnn
 	{
 		value = Ty_(1) / (Ty_(1) + std::exp(-value));
 	}
+
+	template<typename Ty_>
+	basic_layer_ptr<Ty_> sig()
+	{
+		return std::make_shared<basic_sigmoid<Ty_>>();
+	}
 }
 
 #endif

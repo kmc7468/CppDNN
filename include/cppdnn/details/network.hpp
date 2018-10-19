@@ -6,6 +6,13 @@
 namespace cppdnn
 {
 	template<typename Ty_>
+	basic_network<Ty_>& basic_network<Ty_>::operator<<(const basic_layer_ptr<Ty_>& layer)
+	{
+		add_layer(layer);
+		return *this;
+	}
+
+	template<typename Ty_>
 	template<typename Layer_, typename ...Args_>
 	void basic_network<Ty_>::add_layer(Args_&&... args)
 	{
