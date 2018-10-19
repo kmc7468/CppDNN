@@ -1,4 +1,5 @@
 #include <cppdnn/exception.hpp>
+#include <cppdnn/fully_connected_layer.hpp>
 #include <cppdnn/layer.hpp>
 #include <cppdnn/network.hpp>
 #include <cppdnn/object.hpp>

@@ -1,6 +1,7 @@
 #ifndef CPPDNN_HEADER_OBJECT_HPP
 #define CPPDNN_HEADER_OBJECT_HPP
 
+#include <cstddef>
 #include <functional>
 #include <memory>
 #include <type_traits>
@@ -28,6 +29,11 @@ namespace cppdnn
 		virtual bool operator==(const basic_object& object) const = 0;
 		virtual bool operator!=(const basic_object& object) const;
 
+		virtual std::shared_ptr<basic_object<Ty_>> operator+(const basic_object& object) const = 0;
+		virtual std::shared_ptr<basic_object<Ty_>> operator*(const basic_object& object) const = 0;
+		virtual basic_object& operator+=(const basic_object& object) = 0;
+		virtual basic_object& operator*=(const basic_object& object) = 0;
+
 	public:
 		virtual bool is_value() const noexcept;
 
@@ -40,6 +46,9 @@ namespace cppdnn
 	template<typename Ty_>
 	using basic_object_ptr = std::shared_ptr<basic_object<Ty_>>;
 	using object_ptr = basic_object_ptr<double>;
+
+	template<typename Ty_>
+	class basic_value_ref;
 
 	template<typename Ty_>
 	class basic_value : public basic_object<Ty_>
@@ -57,15 +66,61 @@ namespace cppdnn
 		basic_value& operator=(basic_value&& value) noexcept(std::is_nothrow_move_assignable<Ty_>::value);
 		bool operator==(const basic_value& value) const noexcept(noexcept(std::declval<Ty_>() == std::declval<Ty_>()));
 		bool operator!=(const basic_value& value) const noexcept(noexcept(std::declval<Ty_>() != std::declval<Ty_>()));
-
+		
 		virtual basic_object<Ty_>& operator=(const basic_object<Ty_>& object) override;
 		virtual basic_object<Ty_>& operator=(basic_object<Ty_>&& object) override;
 		virtual bool operator==(const basic_object<Ty_>& object) const override;
 		virtual bool operator!=(const basic_object<Ty_>& object) const override;
+		
+		basic_value operator+(const basic_value& value) const noexcept(noexcept(std::declval<Ty_>() + std::declval<Ty_>()));
+		basic_value operator+(const basic_value_ref<Ty_>& value) const noexcept(noexcept(std::declval<Ty_>() + std::declval<Ty_>()));
+		basic_value operator-(const basic_value& value) const noexcept(noexcept(std::declval<Ty_>() - std::declval<Ty_>()));
+		basic_value operator-(const basic_value_ref<Ty_>& value) const noexcept(noexcept(std::declval<Ty_>() - std::declval<Ty_>()));
+		basic_value operator*(const basic_value& value) const noexcept(noexcept(std::declval<Ty_>() * std::declval<Ty_>()));
+		basic_value operator*(const basic_value_ref<Ty_>& value) const noexcept(noexcept(std::declval<Ty_>() * std::declval<Ty_>()));
+		basic_value operator/(const basic_value& value) const noexcept(noexcept(std::declval<Ty_>() / std::declval<Ty_>()));
+		basic_value operator/(const basic_value_ref<Ty_>& value) const noexcept(noexcept(std::declval<Ty_>() / std::declval<Ty_>()));
+		basic_value& operator+=(const basic_value& value) noexcept(std::is_nothrow_move_assignable<basic_value<Ty_>>::value && noexcept(operator+(std::declval<basic_value<Ty_>>())))
+		{
+			return operator=(operator+(value));
+		}
+		basic_value& operator+=(const basic_value_ref<Ty_>& value) noexcept(std::is_nothrow_move_assignable<basic_value<Ty_>>::value && noexcept(operator+(std::declval<basic_value_ref<Ty_>>())))
+		{
+			return operator=(operator+(value));
+		}
+		basic_value& operator-=(const basic_value& value) noexcept(std::is_nothrow_move_assignable<basic_value<Ty_>>::value && noexcept(operator-(std::declval<basic_value<Ty_>>())))
+		{
+			return operator=(operator-(value));
+		}
+		basic_value& operator-=(const basic_value_ref<Ty_>& value) noexcept(std::is_nothrow_move_assignable<basic_value<Ty_>>::value && noexcept(operator-(std::declval<basic_value_ref<Ty_>>())))
+		{
+			return operator=(operator-(value));
+		}
+		basic_value& operator*=(const basic_value& value) noexcept(std::is_nothrow_move_assignable<basic_value<Ty_>>::value && noexcept(operator*(std::declval<basic_value<Ty_>>())))
+		{
+			return operator=(operator*(value));
+		}
+		basic_value& operator*=(const basic_value_ref<Ty_>& value) noexcept(std::is_nothrow_move_assignable<basic_value<Ty_>>::value && noexcept(operator*(std::declval<basic_value_ref<Ty_>>())))
+		{
+			return operator=(operator*(value));
+		}
+		basic_value& operator/=(const basic_value& value) noexcept(std::is_nothrow_move_assignable<basic_value<Ty_>>::value && noexcept(operator/(std::declval<basic_value<Ty_>>())))
+		{
+			return operator=(operator/(value));
+		}
+		basic_value& operator/=(const basic_value_ref<Ty_>& value) noexcept(std::is_nothrow_move_assignable<basic_value<Ty_>>::value && noexcept(operator/(std::declval<basic_value_ref<Ty_>>())))
+		{
+			return operator=(operator/(value));
+		}
+
+		virtual std::shared_ptr<basic_object<Ty_>> operator+(const basic_object<Ty_>& object) const override;
+		virtual std::shared_ptr<basic_object<Ty_>> operator*(const basic_object<Ty_>& object) const override;
+		virtual basic_object<Ty_>& operator+=(const basic_object<Ty_>& object) override;
+		virtual basic_object<Ty_>& operator*=(const basic_object<Ty_>& object) override;
 
 	public:
 		virtual bool is_value() const noexcept override;
-		
+
 		virtual std::shared_ptr<basic_object<Ty_>> copy() const override;
 		virtual void for_each(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const override;
 		virtual void apply(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>& func) override;
@@ -86,10 +141,12 @@ namespace cppdnn
 	public:
 		basic_value_ref() noexcept = default;
 		basic_value_ref(Ty_& value) noexcept;
+		basic_value_ref(basic_value<Ty_>& value) noexcept;
 		basic_value_ref(const basic_value_ref& value) noexcept;
 		virtual ~basic_value_ref() override = default;
 
 	public:
+		basic_value_ref& operator=(const basic_value<Ty_>& value) noexcept;
 		basic_value_ref& operator=(const basic_value_ref& value) noexcept;
 		bool operator==(const basic_value_ref& value) const noexcept;
 		bool operator!=(const basic_value_ref& value) const noexcept;
@@ -98,6 +155,52 @@ namespace cppdnn
 		virtual basic_object<Ty_>& operator=(basic_object<Ty_>&& object) override;
 		virtual bool operator==(const basic_object<Ty_>& object) const override;
 		virtual bool operator!=(const basic_object<Ty_>& object) const override;
+
+		basic_value<Ty_> operator+(const basic_value_ref& value) const noexcept(noexcept(std::declval<Ty_>() + std::declval<Ty_>()));
+		basic_value<Ty_> operator+(const basic_value<Ty_>& value) const noexcept(noexcept(std::declval<Ty_>() + std::declval<Ty_>()));
+		basic_value<Ty_> operator-(const basic_value_ref& value) const noexcept(noexcept(std::declval<Ty_>() - std::declval<Ty_>()));
+		basic_value<Ty_> operator-(const basic_value<Ty_>& value) const noexcept(noexcept(std::declval<Ty_>() - std::declval<Ty_>()));
+		basic_value<Ty_> operator*(const basic_value_ref& value) const noexcept(noexcept(std::declval<Ty_>() * std::declval<Ty_>()));
+		basic_value<Ty_> operator*(const basic_value<Ty_>& value) const noexcept(noexcept(std::declval<Ty_>() * std::declval<Ty_>()));
+		basic_value<Ty_> operator/(const basic_value_ref& value) const noexcept(noexcept(std::declval<Ty_>() / std::declval<Ty_>()));
+		basic_value<Ty_> operator/(const basic_value<Ty_>& value) const noexcept(noexcept(std::declval<Ty_>() / std::declval<Ty_>()));
+		basic_value_ref& operator+=(const basic_value_ref& value) noexcept(std::is_nothrow_move_assignable<basic_value<Ty_>>::value && noexcept(operator+(std::declval<basic_value_ref<Ty_>>())))
+		{
+			return operator=(operator+(value));
+		}
+		basic_value_ref& operator+=(const basic_value<Ty_>& value) noexcept(std::is_nothrow_move_assignable<basic_value<Ty_>>::value && noexcept(operator+(std::declval<basic_value<Ty_>>())))
+		{
+			return operator=(operator+(value));
+		}
+		basic_value_ref& operator-=(const basic_value_ref& value) noexcept(std::is_nothrow_move_assignable<basic_value<Ty_>>::value && noexcept(operator-(std::declval<basic_value_ref<Ty_>>())))
+		{
+			return operator=(operator-(value));
+		}
+		basic_value_ref& operator-=(const basic_value<Ty_>& value) noexcept(std::is_nothrow_move_assignable<basic_value<Ty_>>::value && noexcept(operator-(std::declval<basic_value<Ty_>>())))
+		{
+			return operator=(operator-(value));
+		}
+		basic_value_ref& operator*=(const basic_value_ref& value) noexcept(std::is_nothrow_move_assignable<basic_value<Ty_>>::value && noexcept(operator*(std::declval<basic_value_ref<Ty_>>())))
+		{
+			return operator=(operator*(value));
+		}
+		basic_value_ref& operator*=(const basic_value<Ty_>& value) noexcept(std::is_nothrow_move_assignable<basic_value<Ty_>>::value && noexcept(operator*(std::declval<basic_value<Ty_>>())))
+		{
+			return operator=(operator*(value));
+		}
+		basic_value_ref& operator/=(const basic_value_ref& value) noexcept(std::is_nothrow_move_assignable<basic_value<Ty_>>::value && noexcept(operator/(std::declval<basic_value_ref<Ty_>>())))
+		{
+			return operator=(operator/(value));
+		}
+		basic_value_ref& operator/=(const basic_value<Ty_>& value) noexcept(std::is_nothrow_move_assignable<basic_value<Ty_>>::value && noexcept(operator/(std::declval<basic_value<Ty_>>())))
+		{
+			return operator=(operator/(value));
+		}
+
+		virtual std::shared_ptr<basic_object<Ty_>> operator+(const basic_object<Ty_>& object) const override;
+		virtual std::shared_ptr<basic_object<Ty_>> operator*(const basic_object<Ty_>& object) const override;
+		virtual basic_object<Ty_>& operator+=(const basic_object<Ty_>& object) override;
+		virtual basic_object<Ty_>& operator*=(const basic_object<Ty_>& object) override;
 
 	public:
 		virtual bool is_value() const noexcept override;

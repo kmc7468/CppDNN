@@ -9,7 +9,7 @@ namespace cppdnn
 	template<typename Layer_, typename ...Args_>
 	void basic_network<Ty_>::add_layer(Args_&&... args)
 	{
-		layers_.push_back(std::make_shared<Layer_>(std::forward(args)...));
+		layers_.push_back(std::make_shared<Layer_>(std::forward<Args_>(args)...));
 	}
 	template<typename Ty_>
 	void basic_network<Ty_>::add_layer(const basic_layer_ptr<Ty_>& layer)

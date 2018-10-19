@@ -107,6 +107,46 @@ namespace cppdnn
 	}
 
 	template<typename Ty_>
+	basic_value<Ty_> basic_vector<Ty_>::operator*(const basic_vector<Ty_>& vector) const
+	{
+		if (size() != vector.size())
+			throw incompatible_argument("The size of argument 'vector' isn't compatible with it.");
+
+		Ty_ result = 0;
+
+		for (std::size_t i = 0; i < size(); ++i)
+		{
+			result += data_[i] * vector.data_[i];
+		}
+
+		return result;
+	}
+
+	template<typename Ty_>
+	std::shared_ptr<basic_object<Ty_>> basic_vector<Ty_>::operator+(const basic_object<Ty_>&) const
+	{
+		throw not_impl("cppdnn::basic_vector::operator+ isn't implemented.");
+	}
+	template<typename Ty_>
+	std::shared_ptr<basic_object<Ty_>> basic_vector<Ty_>::operator*(const basic_object<Ty_>& object) const
+	{
+		if (!instance_of<basic_vector<Ty_>>(&object))
+			throw invalid_type("Argument 'object' can't be converted to cppdnn::basic_value.");
+
+		return std::make_shared<basic_value<Ty_>>(operator*(dynamic_cast<const basic_vector&>(object)));
+	}
+	template<typename Ty_>
+	basic_object<Ty_>& basic_vector<Ty_>::operator+=(const basic_object<Ty_>&)
+	{
+		throw not_impl("cppdnn::basic_vector::operator+= isn't implemented.");
+	}
+	template<typename Ty_>
+	basic_object<Ty_>& basic_vector<Ty_>::operator*=(const basic_object<Ty_>&)
+	{
+		throw not_impl("cppdnn::basic_vector::operator*= isn't implemented.");
+	}
+
+	template<typename Ty_>
 	std::shared_ptr<basic_object<Ty_>> basic_vector<Ty_>::copy() const
 	{
 		return std::make_shared<basic_vector<Ty_>>(data_);
@@ -114,24 +154,12 @@ namespace cppdnn
 	template<typename Ty_>
 	void basic_vector<Ty_>::for_each(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const
 	{
-		std::shared_ptr<basic_value_ref<Ty_>> data = std::make_shared<basic_value_ref<Ty_>>();
-
-		for (const Ty_& value : data_)
-		{
-			*data = const_cast<Ty_&>(value);
-			func(data);
-		}
+		for_each_<Ty_>(func);
 	}
 	template<typename Ty_>
 	void basic_vector<Ty_>::apply(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>& func)
 	{
-		std::shared_ptr<basic_value_ref<Ty_>> data = std::make_shared<basic_value_ref<Ty_>>();
-
-		for (Ty_& value : data_)
-		{
-			*data = value;
-			func(data);
-		}
+		apply_<Ty_>(func);
 	}
 
 	template<typename Ty_>
@@ -203,6 +231,55 @@ namespace cppdnn
 	typename basic_vector<Ty_>::const_reverse_iterator basic_vector<Ty_>::crend() const noexcept
 	{
 		return data_.crend();
+	}
+
+	template<typename Ty_>
+	template<typename Ty2_>
+	typename std::enable_if<details::is_object_ptr<Ty2_>::value>::type basic_vector<Ty_>::for_each_(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const
+	{
+		std::shared_ptr<basic_value_ref<Ty_>> data = std::make_shared<basic_value_ref<Ty_>>();
+
+		for (const Ty_& value : data_)
+		{
+			*data = basic_value_ref<Ty_>(const_cast<Ty_&>(value));
+			func(data);
+		}
+	}
+	template<typename Ty_>
+	template<typename Ty2_>
+	typename std::enable_if<!details::is_object_ptr<Ty2_>::value>::type basic_vector<Ty_>::for_each_(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const
+	{
+		std::shared_ptr<basic_value_ref<Ty_>> data = std::make_shared<basic_value_ref<Ty_>>();
+
+		for (const Ty_& value : data_)
+		{
+			*data = basic_value_ref<Ty_>(const_cast<Ty_&>(value));
+			func(data);
+		}
+	}
+	template<typename Ty_>
+	template<typename Ty2_>
+	typename std::enable_if<details::is_object_ptr<Ty2_>::value>::type basic_vector<Ty_>::apply_(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>& func) const
+	{
+		std::shared_ptr<basic_value_ref<Ty_>> data = std::make_shared<basic_value_ref<Ty_>>();
+
+		for (const Ty_& value : data_)
+		{
+			*data = basic_value_ref<Ty_>(const_cast<Ty_&>(value));
+			func(data);
+		}
+	}
+	template<typename Ty_>
+	template<typename Ty2_>
+	typename std::enable_if<!details::is_object_ptr<Ty2_>::value>::type basic_vector<Ty_>::apply_(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>& func) const
+	{
+		std::shared_ptr<basic_value_ref<Ty_>> data = std::make_shared<basic_value_ref<Ty_>>();
+
+		for (Ty_& value : data_)
+		{
+			*data = value;
+			func(data);
+		}
 	}
 
 	template<typename Ty_>

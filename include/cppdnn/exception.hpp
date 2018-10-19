@@ -6,17 +6,17 @@
 
 namespace cppdnn
 {
-	class invalid_type : public std::runtime_error
-	{
-	public:
-		using std::runtime_error::runtime_error;
-	};
-	
-	class not_impl : public std::runtime_error
-	{
-	public:
-		using std::runtime_error::runtime_error;
-	};
+#define ERROR(base, name)										\
+	class name : public std:: base								\
+	{															\
+	public:														\
+		using std:: base :: base;								\
+	}
+#define RUNTIME_ERROR(name) ERROR(runtime_error, name)
+
+	RUNTIME_ERROR(invalid_type);
+	RUNTIME_ERROR(not_impl);
+	RUNTIME_ERROR(incompatible_argument);
 }
 
 #endif

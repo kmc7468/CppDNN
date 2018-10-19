@@ -3,12 +3,27 @@
 
 #include <cppdnn/object.hpp>
 
+#include <cstddef>
 #include <initializer_list>
 #include <memory>
 #include <vector>
 
 namespace cppdnn
 {
+	namespace details
+	{
+		template<typename Ty_>
+		struct is_object_ptr
+		{
+			static constexpr bool value = true;
+		};
+		template<template<typename> typename Ty_, typename Elem_>
+		struct is_object_ptr<std::shared_ptr<Ty_<Elem_>>>
+		{
+			static constexpr bool value = std::is_base_of<basic_object<Elem_>, Ty_<Elem_>>::value;
+		};
+	}
+
 	template<typename Ty_>
 	class basic_vector : public basic_object<Ty_>
 	{
@@ -41,10 +56,17 @@ namespace cppdnn
 		virtual bool operator==(const basic_object<Ty_>& object) const override;
 		virtual bool operator!=(const basic_object<Ty_>& object) const override;
 
+		basic_value<Ty_> operator*(const basic_vector<Ty_>& vector) const;
+
+		virtual std::shared_ptr<basic_object<Ty_>> operator+(const basic_object<Ty_>& object) const override;
+		virtual std::shared_ptr<basic_object<Ty_>> operator*(const basic_object<Ty_>& object) const override;
+		virtual basic_object<Ty_>& operator+=(const basic_object<Ty_>& object) override;
+		virtual basic_object<Ty_>& operator*=(const basic_object<Ty_>& object) override;
+
 	public:
 		virtual std::shared_ptr<basic_object<Ty_>> copy() const override;
 		virtual void for_each(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const override;
-		virtual void apply(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>&) override;
+		virtual void apply(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>& func) override;
 
 	public:
 		const Ty_& at(std::size_t index) const noexcept;
@@ -64,6 +86,16 @@ namespace cppdnn
 
 		bool empty() const noexcept;
 		std::size_t size() const noexcept;
+
+	private:
+		template<typename Ty2_>
+		typename std::enable_if<details::is_object_ptr<Ty2_>::value>::type for_each_(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const;
+		template<typename Ty2_>
+		typename std::enable_if<!details::is_object_ptr<Ty2_>::value>::type for_each_(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const;
+		template<typename Ty2_>
+		typename std::enable_if<details::is_object_ptr<Ty2_>::value>::type apply_(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>& func) const;
+		template<typename Ty2_>
+		typename std::enable_if<!details::is_object_ptr<Ty2_>::value>::type apply_(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>& func) const;
 
 	private:
 		std::vector<Ty_> data_;
