@@ -68,6 +68,9 @@ namespace cppdnn
 		virtual void for_each(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const override;
 		virtual void apply(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>& func) override;
 
+	protected:
+		virtual std::string to_string_priv(bool detail) const override;
+
 	public:
 		const Ty_& at(std::size_t index) const noexcept;
 		Ty_& at(std::size_t index) noexcept;

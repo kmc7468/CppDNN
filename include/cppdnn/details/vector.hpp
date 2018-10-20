@@ -163,6 +163,43 @@ namespace cppdnn
 	}
 
 	template<typename Ty_>
+	std::string basic_vector<Ty_>::to_string_priv(bool detail) const
+	{
+		std::string result;
+
+		if (detail)
+		{
+			result = "vector";
+		}
+		result += '(';
+		if (detail)
+		{
+			result += std::to_string(data_.size());
+			result += ": ";
+		}
+
+		bool is_first = true;
+
+		for (const Ty_& value : data_)
+		{
+			if (is_first)
+			{
+				is_first = false;
+			}
+			else
+			{
+				result += ' ';
+			}
+
+			result += std::to_string(value);
+		}
+
+		result += ')';
+
+		return result;
+	}
+
+	template<typename Ty_>
 	const Ty_& basic_vector<Ty_>::at(std::size_t index) const noexcept
 	{
 		return data_.at(index);

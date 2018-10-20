@@ -17,6 +17,17 @@ namespace cppdnn
 	{
 		return false;
 	}
+
+	template<typename Ty_>
+	std::string basic_object<Ty_>::to_string() const
+	{
+		return to_string(true);
+	}
+	template<typename Ty_>
+	std::string basic_object<Ty_>::to_string(bool detail) const
+	{
+		return to_string_priv(detail);
+	}
 }
 
 namespace cppdnn
@@ -212,6 +223,26 @@ namespace cppdnn
 	void basic_value<Ty_>::apply(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>&)
 	{
 		throw not_impl("cppdnn::basic_value::apply isn't implemented.");
+	}
+
+	template<typename Ty_>
+	std::string basic_value<Ty_>::to_string_priv(bool detail) const
+	{
+		std::string result;
+
+		if (detail)
+		{
+			result = "value(";
+		}
+
+		result += std::to_string(data_);
+
+		if (detail)
+		{
+			result += ')';
+		}
+
+		return result;
 	}
 
 	template<typename Ty_>
@@ -431,6 +462,26 @@ namespace cppdnn
 	void basic_value_ref<Ty_>::apply(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>&)
 	{
 		throw not_impl("cppdnn::basic_value_ref::apply isn't implemented.");
+	}
+
+	template<typename Ty_>
+	std::string basic_value_ref<Ty_>::to_string_priv(bool detail) const
+	{
+		std::string result;
+
+		if (detail)
+		{
+			result = "value(ref: ";
+		}
+
+		result += std::to_string(*data_);
+
+		if (detail)
+		{
+			result += ')';
+		}
+
+		return result;
 	}
 
 	template<typename Ty_>

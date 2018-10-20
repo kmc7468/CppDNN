@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <functional>
 #include <memory>
+#include <string>
 #include <type_traits>
 #include <utility>
 
@@ -40,6 +41,13 @@ namespace cppdnn
 		virtual std::shared_ptr<basic_object<Ty_>> copy() const = 0;
 		virtual void for_each(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const = 0;
 		virtual void apply(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>& func) = 0;
+
+	protected:
+		virtual std::string to_string_priv(bool detail) const = 0;
+
+	public:
+		std::string to_string() const;
+		std::string to_string(bool detail) const;
 	};
 
 	using object = basic_object<double>;
@@ -125,6 +133,9 @@ namespace cppdnn
 		virtual void for_each(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const override;
 		virtual void apply(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>& func) override;
 
+	protected:
+		virtual std::string to_string_priv(bool detail) const override;
+
 	public:
 		const Ty_& data() const noexcept;
 		Ty_& data() noexcept;
@@ -208,6 +219,9 @@ namespace cppdnn
 		virtual std::shared_ptr<basic_object<Ty_>> copy() const override;
 		virtual void for_each(const std::function<void(std::shared_ptr<basic_object<Ty_>>)>& func) const override;
 		virtual void apply(const std::function<void(const std::shared_ptr<basic_object<Ty_>>&)>& func) override;
+
+	protected:
+		virtual std::string to_string_priv(bool detail) const override;
 
 	public:
 		const Ty_& data() const noexcept;
