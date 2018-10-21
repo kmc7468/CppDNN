@@ -123,10 +123,10 @@ namespace cppdnn
 
 	using training_set = basic_training_set<double>;
 
-	template<typename Ty_>
+	template<typename Ty_ = double>
 	basic_training_set_base_ptr<Ty_> make_training_set(const basic_object_ptr<Ty_>& input, const basic_object_ptr<Ty_>& output);
 
-	template<typename Ty_>
+	template<typename Ty_ = double>
 	basic_training_data_ptr<Ty_> make_training_data(const std::vector<std::pair<std::vector<Ty_>, std::vector<Ty_>>>& data);
 }
 

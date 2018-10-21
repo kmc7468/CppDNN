@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <functional>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -48,12 +49,25 @@ namespace cppdnn
 	public:
 		std::string to_string() const;
 		std::string to_string(bool detail) const;
+		void print() const;
+		void print(bool detail) const;
+		void print(std::ostream& stream) const;
+		void print(std::ostream& stream, bool detail) const;
+		void println() const;
+		void println(bool detail) const;
+		void println(std::ostream& stream) const;
+		void println(std::ostream& stream, bool detail) const;
 	};
 
 	using object = basic_object<double>;
 	template<typename Ty_>
 	using basic_object_ptr = std::shared_ptr<basic_object<Ty_>>;
 	using object_ptr = basic_object_ptr<double>;
+
+	template<typename Ty_>
+	std::ostream& operator<<(std::ostream& stream, const basic_object<Ty_>& object);
+	template<typename Ty_>
+	std::ostream& operator<<(std::ostream& stream, const basic_object_ptr<Ty_>& object);
 
 	template<typename Ty_>
 	class basic_value_ref;

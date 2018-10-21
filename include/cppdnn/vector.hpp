@@ -106,7 +106,7 @@ namespace cppdnn
 
 	using vector = basic_vector<double>;
 
-	template<typename Ty_, typename... Args_>
+	template<typename Ty_ = double, typename... Args_>
 	std::shared_ptr<basic_vector<Ty_>> make_vector(Args_&&... args);
 	template<typename Ty_>
 	std::shared_ptr<basic_vector<Ty_>> make_arithmetic_vector(Ty_&& first, Ty_&& last);
