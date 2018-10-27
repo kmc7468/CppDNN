@@ -24,7 +24,7 @@ namespace cppdnn
 		virtual void forward(const basic_object_ptr<Ty_>& input, basic_object_ptr<Ty_>& output) const override;
 		
 	protected:
-		virtual void function(Ty_&) const override;
+		virtual void function(const basic_object_ptr<Ty_>&) const override;
 	};
 
 	using softmax_layer = basic_softmax_layer<double>;

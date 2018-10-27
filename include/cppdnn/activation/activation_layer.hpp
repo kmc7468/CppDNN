@@ -2,6 +2,7 @@
 #define CPPDNN_HEADER_ACTIVATION_ACTIVATION_LAYER_HPP
 
 #include <cppdnn/layer.hpp>
+#include <cppdnn/object.hpp>
 
 namespace cppdnn
 {
@@ -26,7 +27,7 @@ namespace cppdnn
 		virtual void forward(const basic_object_ptr<Ty_>& input, basic_object_ptr<Ty_>& output) const override;
 		
 	protected:
-		virtual void function(Ty_& value) const = 0;
+		virtual void function(const basic_object_ptr<Ty_>& input) const = 0;
 	};
 
 	using activation_layer = basic_activation_layer<double>;

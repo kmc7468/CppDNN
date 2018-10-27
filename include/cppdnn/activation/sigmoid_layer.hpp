@@ -21,7 +21,7 @@ namespace cppdnn
 		bool operator!=(const basic_sigmoid_layer& sigmoid) = delete;
 
 	protected:
-		virtual void function(Ty_& value) const override;
+		virtual void function(const basic_object_ptr<Ty_>& input) const override;
 	};
 
 	using sigmoid_layer = basic_sigmoid_layer<double>;

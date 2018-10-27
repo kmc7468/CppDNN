@@ -21,7 +21,7 @@ namespace cppdnn
 		bool operator!=(const basic_tanh_layer& tanh) = delete;
 
 	protected:
-		virtual void function(Ty_& value) const override;
+		virtual void function(const basic_object_ptr<Ty_>& input) const override;
 	};
 
 	using tanh_layer = basic_tanh_layer<double>;

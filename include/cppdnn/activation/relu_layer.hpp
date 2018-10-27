@@ -21,7 +21,7 @@ namespace cppdnn
 		bool operator!=(const basic_relu_layer& relu) = delete;
 
 	protected:
-		virtual void function(Ty_& value) const override;
+		virtual void function(const basic_object_ptr<Ty_>& input) const override;
 	};
 
 	using relu_layer = basic_relu_layer<double>;

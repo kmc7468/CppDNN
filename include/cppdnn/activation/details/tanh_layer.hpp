@@ -6,9 +6,13 @@
 namespace cppdnn
 {
 	template<typename Ty_>
-	void basic_tanh_layer<Ty_>::function(Ty_& value) const
+	void basic_tanh_layer<Ty_>::function(const basic_object_ptr<Ty_>& input) const
 	{
-		value = std::tanh(value);
+		input->apply([](const basic_object_ptr<Ty_>& value)
+		{
+			Ty_& data = to_value_ref(value)->data();
+			data = std::tanh(data);
+		});
 	}
 
 	template<typename Ty_>
